@@ -30,6 +30,11 @@ module memory (
 );
 //---------------------------------//
 
+always_latch begin
+	if (mem_read_control) begin
+		assign read_data_from_memory = read_data_from_memory_controller;
+	end
+end
 
 always_ff @(posedge clk or negedge rst) begin
 	//TODO
@@ -50,21 +55,18 @@ always_ff @(posedge clk or negedge rst) begin
 	//Enviar "alu_result_in" para o controler.
 	//Verificar se precisa alinhar o dado
 	//read_data = Controler_Data
-
-	//TODO
-	// O dado esta um ciclo de clock atrasado.
-	//A logica da memoria nao pode ficar dentro do always_ff.
 	if (mem_read_control) begin
 		assign memory_addr = alu_result_from_execution;
+		//TODO verificar se essas variaveis sao necessarias ou o controle sabera se deve ler ou escrever
 		assign read = 1;
 		assign write = 0;
-		assign read_data_from_memory = read_data_from_memory_controller;
 	end
 	//IF mem_write_control
 	//Enviar "(alu_result_in, read_data_2_in)" para o controler salvar na memória
 	if (mem_write_control) begin
 		assign memory_addr = alu_result_from_execution;
 		assign data_to_write = read_data_2_from_execution;
+		//TODO verificar se essas variaveis sao necessarias ou o controle sabera se deve ler ou escrever
 		assign read = 0;
 		assign write = 1;
 	end
