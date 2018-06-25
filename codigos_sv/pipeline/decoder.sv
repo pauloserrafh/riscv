@@ -13,11 +13,11 @@ module decoder (
 	input logic 		write_reg_control, //RegWrite
 	input logic [31:0] 	pc,
 	//---------------------------//
-	output logic [31:0] read_data_1,
-	output logic [31:0] read_data_2,
-	output logic [31:0] immed_31_0,
-	output logic [4:0] immed_11_7,
-	output logic [3:0] immed_30_14_12
+	output logic [31:0] read_data_1_from_decoder,
+	output logic [31:0] read_data_2_from_decoder,
+	output logic [31:0] immed_31_0_from_decoder,
+	output logic [4:0] immed_11_7_from_decoder,
+	output logic [3:0] immed_30_14_12_from_decoder
 );
 //---------------------------------//
 

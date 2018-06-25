@@ -7,12 +7,12 @@ module write_back (
 	input logic clk,
 	input logic rst,
 	//---------------------------//
-	input logic [31:0] read_data,
-	input logic [31:0] ula_result,
+	input logic [31:0] read_data_from_memory,
+	input logic [31:0] alu_result_from_memory,
 	input logic mem_to_reg_control, //vem do controle
 	//----------------------------//
 	output logic [31:0] data_write_mem
-	
+
 );
 //---------------------------------//
 
@@ -22,4 +22,4 @@ module write_back (
 
 
 
-endmodule 
+endmodule
