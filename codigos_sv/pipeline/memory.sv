@@ -7,8 +7,8 @@ module memory (
 	input logic clk,
 	input logic rst,
 	//---------------------------//
-	input logic [31:0] alu_result_from_execution,	//saida ula. Vem do estagio anterior.
-	input logic flag_zero_from_execution,			//flag zero da ula. Vem do estagio anterior.
+	input logic [31:0] alu_result_from_execution,	//saida ula. Vem do estagio anterior ou da ULA.
+	input logic flag_zero_from_execution,			//flag zero da ula. Vem do estagio anterior ou da ULA.
 	input logic [31:0] add_sum_from_execution,		//AddSum, calculo do PC caso haja desvio. Vem do estagio anterior.
 	input logic [31:0] read_data_2_from_execution,	//Vem do estagio anterior e passado para o proximo
 	input logic [4:0] immed_11_7_from_execution,	//Vem do estagio anterior e passado para o proximo
@@ -21,7 +21,7 @@ module memory (
 	output logic [31:0] alu_result_from_memory,
 	output logic [4:0] immed_11_7_from_memory,
 	output logic [31:0] add_sum_from_memory,
-	output logic PCSrc,
+	output logic PCSrc_from_memory,
 	//Dado enviado ao controler para ler/escrever da memoria
 	output logic read,
 	output logic write,
@@ -49,7 +49,7 @@ always_ff @(posedge clk or negedge rst) begin
 	//IF flag_zero and branch_control
 	//PCSrc = 1 (branch ocorreu)
 	//ELSE PCSrc = 0 (branch não ocorreu)
-	assign PCSrc = (flag_zero_from_execution && branch_control);
+	assign PCSrc_from_memory = (flag_zero_from_execution && branch_control);
 
 	//IF mem_read_control
 	//Enviar "alu_result_in" para o controler.
@@ -71,5 +71,4 @@ always_ff @(posedge clk or negedge rst) begin
 		assign write = 1;
 	end
 end
-
 endmodule

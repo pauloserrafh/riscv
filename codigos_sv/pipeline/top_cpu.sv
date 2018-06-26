@@ -12,7 +12,7 @@ module top_cpu (
 	output logic [31:0] instruction_out
 );
 //--------------internal-signals------------------//
-logic [31:0] name_signal //example
+logic [31:0] name_signal; //example
 //---------------------------------//
 
 fetch fetch_riscv(
