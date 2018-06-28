@@ -47,37 +47,46 @@ module sim_memory();
 		data_to_write
 	);
 	initial begin
+		#0
 		clk=0;
 		rst=0;
-		//1 ciclo
-		//
-		#10
+		#5
 		clk=1;
-		alu_result_from_execution = {32{4'b0000}};
+		alu_result_from_execution = {32'b00000000000000000000000000000000};
 		flag_zero_from_execution = 0;
-		add_sum_from_execution = {32{4'b0000}};
-		read_data_2_from_execution = {32{4'b0000}};
-		immed_11_7_from_execution = {32{4'b0000}};
+		add_sum_from_execution = {32'b00000000000000000000000000000000};
+		read_data_2_from_execution = {32'b00000000000000000000000000000000};
+		immed_11_7_from_execution = {32'b00000000000000000000000000000000};
 		mem_read_control = 1;
 		mem_write_control = 0;
 		branch_control = 0;
-		read_data_from_memory_controller = {32{4'b0000}};
-		#12
-		read_data_from_memory_controller = {32{4'b1111}};
-		#15
+		read_data_from_memory_controller = {32'b00000000000000000000000000000000};
+		#10
 		clk = 0;
-		#20
+		#12
+		read_data_from_memory_controller = {32'b11111111111111111111111111111111};
+		#15
 		clk = 1;
-		alu_result_from_execution = {32{4'b1111}};
-		flag_zero_from_execution = 0;
-		add_sum_from_execution = {32{4'b1111}};
-		read_data_2_from_execution = {32{4'b1111}};
-		immed_11_7_from_execution = {32{4'b1111}};
+		alu_result_from_execution = {32'b11111111111111111111111111111100};
+		flag_zero_from_execution = 1;
+		add_sum_from_execution = {32'b11111111111111111111111111111111};
+		read_data_2_from_execution = {32'b00111111111111111111111111111111};
+		immed_11_7_from_execution = {32'b11111111111111111111111111111111};
+		mem_read_control = 0;
+		mem_write_control = 1;
+		branch_control = 0;
+		#20
+		clk = 0;
+		#25
+		clk = 1;
+		alu_result_from_execution = {32'b11111111111111111111111111111100};
+		flag_zero_from_execution = 1;
+		add_sum_from_execution = {32'b11111111111111111111111111111111};
+		read_data_2_from_execution = {32'b00111111111111111111111111111111};
+		immed_11_7_from_execution = {32'b11111111111111111111111111111111};
 		mem_read_control = 0;
 		mem_write_control = 0;
-		branch_control = 0;
-		#25
-		clk = 0;
+		branch_control = 1;
 	end
 endmodule
 

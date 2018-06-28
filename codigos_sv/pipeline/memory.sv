@@ -32,7 +32,7 @@ module memory (
 
 always_latch begin
 	if (mem_read_control) begin
-		assign read_data_from_memory = read_data_from_memory_controller;
+		read_data_from_memory <= read_data_from_memory_controller;
 	end
 end
 
@@ -42,33 +42,33 @@ always_ff @(posedge clk or negedge rst) begin
 
 	// Assign valores passados diretamente do estagio anterior
 	// para o proximo.
-	assign alu_result_from_memory = alu_result_from_execution;
-	assign add_sum_from_memory = add_sum_from_execution;
-	assign immed_11_7_from_memory = immed_11_7_from_execution;
+	alu_result_from_memory <= alu_result_from_execution;
+	add_sum_from_memory <= add_sum_from_execution;
+	immed_11_7_from_memory <= immed_11_7_from_execution;
 
 	//IF flag_zero and branch_control
 	//PCSrc = 1 (branch ocorreu)
 	//ELSE PCSrc = 0 (branch não ocorreu)
-	assign PCSrc_from_memory = (flag_zero_from_execution && branch_control);
+	PCSrc_from_memory <= (flag_zero_from_execution && branch_control);
 
 	//IF mem_read_control
 	//Enviar "alu_result_in" para o controler.
 	//Verificar se precisa alinhar o dado
 	//read_data = Controler_Data
 	if (mem_read_control) begin
-		assign memory_addr = alu_result_from_execution;
+		memory_addr <= alu_result_from_execution;
 		//TODO verificar se essas variaveis sao necessarias ou o controle sabera se deve ler ou escrever
-		assign read = 1;
-		assign write = 0;
+		read <= 1;
+		write <= 0;
 	end
 	//IF mem_write_control
 	//Enviar "(alu_result_in, read_data_2_in)" para o controler salvar na memória
 	if (mem_write_control) begin
-		assign memory_addr = alu_result_from_execution;
-		assign data_to_write = read_data_2_from_execution;
+		memory_addr <= alu_result_from_execution;
+		data_to_write <= read_data_2_from_execution;
 		//TODO verificar se essas variaveis sao necessarias ou o controle sabera se deve ler ou escrever
-		assign read = 0;
-		assign write = 1;
+		read <= 0;
+		write <= 1;
 	end
 end
 endmodule

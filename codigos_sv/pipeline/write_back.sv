@@ -23,9 +23,9 @@ always_ff @(posedge clk or negedge rst) begin
 	//Estado reset
 	
 	//Assign dado que sera escrito na memoria
-	assign data_write_from_wb = (mem_to_reg_control) ? alu_result_from_memory : read_data_from_memory;
+	data_write_from_wb <= (mem_to_reg_control) ? alu_result_from_memory : read_data_from_memory;
 
 	//Assign registrador que sera escrito. immediate 11-7.
-	assign immed_11_7_from_wb = immed_11_7_from_memory;
+	immed_11_7_from_wb <= immed_11_7_from_memory;
 end
 endmodule

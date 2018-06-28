@@ -11,13 +11,13 @@ module execution (
 	input logic [31:0] read_data_2_from_decoder,
 	input logic [31:0] immed_31_0_from_decoder,
 	input logic [4:0] immed_11_7_from_decoder,
-	input logic alu_source,							//From controler
-	//input logic [3:0] alu_op_from_controller,		//immediate 30 14-12
-	input logic [2:0] alu_op_2_0_from_decoder,
-	input logic alu_op_3_from_decoder,
+	input logic alu_source_control,							//From controler
+	input logic [4:0] alu_op_from_control,					//From controler
+	input logic [3:0] immediate_30_14_12_from_decoder,		//immediate 30 14-12
 	input logic [31:0] pc_from_decoder,
 	//---------------------------//
 	output logic [31:0] alu_result_from_execution,	//saida ula. Vai para proximo estagio.
+	output logic [31:0] alu_result_hi_from_execution,	//saida ula. Vai para proximo estagio. ?
 	//Caso a ALU seja uma unidade externa, a flag sera enviada por ela.
 	//Nao deve ficar aqui essa variavel
 	//output logic flag_zero_from_execution,		//flag zero da ula. Vai para proximo estagio.
@@ -32,22 +32,36 @@ module execution (
 );
 //---------------------------------//
 
+riscv_alu execution_alu(
+	.clk(clk),
+	.rst(rst),
+	.div_en(),
+
+	.A(alu_input_1),
+	.B(alu_input_2),
+	.op(), //immediate_30_14_12_from_decoder alu_op_from_control ?
+
+	.freeze_pipe(), // ?
+	.C(alu_result_from_execution),
+	.C_hi(alu_result_hi_from_execution)
+);
+
 always_ff @(posedge clk or negedge rst) begin
 	//TODO
 	//Estado reset
 
 	//Variaveis passadas diretamente para o proximo estagio
-	assign read_data_2_from_execution = read_data_2_from_decoder;
-	assign immed_11_7_from_execution = immed_11_7_from_decoder;
+	read_data_2_from_execution <= read_data_2_from_decoder;
+	immed_11_7_from_execution <= immed_11_7_from_decoder;
 
 	//Calcula AddSum a partir do PC e immediate
 	//TODO
 	//Verificar se eh preciso fazer shift como indicado na imagem da documentacao
-	assign add_sum_from_execution = pc_from_decoder + immed_31_0_from_decoder;
+	add_sum_from_execution <= pc_from_decoder + immed_31_0_from_decoder;
 
 	//Seleciona input da alu
-	assign alu_input_1 = read_data_1_from_decoder;
-	assign alu_input_2 = (alu_source) ? immed_31_0_from_decoder : read_data_2_from_decoder;
+	alu_input_1 <= read_data_1_from_decoder;
+	alu_input_2 <= (alu_source_control) ? immed_31_0_from_decoder : read_data_2_from_decoder;
 
 end
 endmodule
