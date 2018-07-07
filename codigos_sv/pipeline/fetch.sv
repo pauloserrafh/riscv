@@ -1,65 +1,44 @@
-// RELEASE HISTORY
-// VERSION 	DATE         AUTHOR		DESCRIPTION
-// 1.0		2018-05-07   group   	version sv
-
-`timescale 1ns/1ps
+`timescale 1 ps / 1 ps
 module fetch (
 
-	input clk,
-	input rst,
-	//---------------------------//
-	input logic [31:0] next_pc,
-	input logic PCSrc_from_memory,
-	//---------------------------//
-	output logic [31:0] instr,
-	output logic [31:0] pc_from_fetch,
-	output logic [31:0] npc
+	input clk,   //clock
+	input rst,   //reset
+
+
+	input logic [31:0] next_pc,  //pr�ximo pc de 32 bits
+	input logic load_next_pc,    //controlador para decidir se vai ser um PC+4 ou o PC vindo do branch
+
+
+	output logic [31:0] instr,   //instru��o de sa�da
+	output logic [31:0] pc,      //PC atual
+	output logic [31:0] npc      //Novo PC
+
 );
 
-	logic read_inst;
-	logic read_cache;
-	logic [31:0] addr_cache;
-	logic [31:0] instr_cache;
+	logic read_inst;             //Bit sinalizando a leitura de uma instru��o
+	logic read_cache;            //Bit sinalizando a leitura na cache
+	logic [31:0] addr_cache;     //Endere�o de busca na cache
+//	logic [31:0] instr_cache;    //Instru��o de busca na cache
 
-
+//Importando o m�dulo i_cache
 i_cache  instr_mem(
-	.address(addr_cache),
-	.clock(clk),
-	.rden(read_cache),
-	.q(instr_cache)
+	.address(pc[12:2]),  //Associando o endere�o address da cache de 32 Bits � vari�vel addr_cache
+	.clock(clk),           //Associando o clock do i_cache � vari�vel clk
+	.rden(1'b1),     //Associando o read enable da i_cache � vari�vel read_cache
+	.q(instr)        //Associando a vari�vel q da i_cache de 32 Bits � vari�vel instr_cache
 );
 
- inst_mem_ctrl mem_controller (
-	 .clk(clk),
-	 .rst(rst),
-
-	//CPU:
-	 .rd(read_inst),
-	 .addr_i(pc_from_fetch),
-	 .instr_o(instr),
-	 //.cmp(),
-
-	//MEM0:
-	 .mem0_rd(read_cache),
-	 .mem0_addr_o(addr_cache),
-	 .mem0_data_i(instr_cache)
-
-	//MEM1:
-	//output logic mem1_rd,
-	//output logic [31:0] mem1_addr_o,
-	//input logic [31:0] mem1_data_i
- );
 
 always_ff @(posedge clk or negedge rst) begin
 	if(~rst) begin
-		pc_from_fetch <= 0;
+		pc <= 0;
 		npc <= 0;
-		instr <= 0;
 		read_inst <= 0;
 	end else begin
 		read_inst <= 1;
-		npc <= pc_from_fetch;
-		pc_from_fetch <= (PCSrc_from_memory) ? next_pc : pc_from_fetch + 4;
+		npc <= pc;
+		pc <= load_next_pc ? next_pc : pc +4;
+
 	end
 end
 endmodule
