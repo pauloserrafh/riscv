@@ -13,7 +13,7 @@ module memory (
 	input logic [2:0] funct3_from_execution,
 	input logic [4:0] rd_from_execution,
 	input logic equal_from_execution,
-	input logic less_from_execution,
+	input logic lesser_from_execution,
 	input logic greater_from_execution,
 	input logic read_from_execution,		//Dados do controle
 	input logic write_from_execution,		//Dados do controle
@@ -43,9 +43,9 @@ module memory (
 	logic [31:0] write_data;
 
 branch_unit b_unit(
-	.equal(equal),
-	.lesser(lesser),
-	.greater(greater),
+	.equal(equal_from_execution),
+	.lesser(lesser_from_execution),
+	.greater(greater_from_execution),
 	.branch_type(funct3_from_execution),
 	.resolve(resolve)
 );
