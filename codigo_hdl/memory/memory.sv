@@ -72,7 +72,7 @@ d_cache d_cache_inst (
 
 assign out_from_memory_dcache = out_d_cache;
 
-always_ff @(posedge clk or negedge rst) begin
+always_ff @(posedge clk or posedge rst) begin
 	if(rst) begin
 		result_from_memory <= 32'b0;
 		funct3_from_memory <= 3'b0;

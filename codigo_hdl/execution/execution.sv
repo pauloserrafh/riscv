@@ -80,31 +80,31 @@ logic 			BC_lesser;
 assign gnd = 0;
 
 // Comparador
-basic_comparator32	BC(rs1_data_from_decoder,
-								rs2_data_from_decoder,
+basic_comparator32	BC(sig_1,
+								sig_2,
 								signed_comp_from_decoder,
 								BC_equal,
 								BC_greater,
 								BC_lesser);
 							
 mux_fowarding_unit	MF1(rs1_data_from_decoder,
+								result_from_execution,
 								result_from_memory,
-								result_from_wb,
 								FowardingA,
 								sig_1);
 
 mux_fowarding_unit	MF2(rs2_data_from_decoder,
+								result_from_execution,
 								result_from_memory,
-								result_from_wb,
 								FowardingB,
 								sig_2);
 
 fowarding_unit			FU(reg_src_1_from_decoder,
 								reg_src_2_from_decoder,
+								rd_from_execution,
 								rd_from_memory,
-								rd_from_wb,
+								write_reg_from_execution,
 								write_reg_from_memory,
-								write_reg_from_wb,
 								FowardingA,
 								FowardingB);
 
