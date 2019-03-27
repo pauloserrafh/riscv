@@ -4,25 +4,26 @@ module fetch (
 	input clk,   //clock 
 	input rst,   //reset
 
-	input logic [31:0] next_pc,  //próximo pc de 32 bits
+	input logic [31:0] next_pc,  //prï¿½ximo pc de 32 bits
 	input logic load_next_pc,    //controlador para decidir se vai ser um PC+4 ou o PC vindo do branch
+	input logic bubble_from_decoder,
 
-	output logic [31:0] instruction,   //instrução de saída
+	output logic [31:0] instruction,   //instruï¿½ï¿½o de saï¿½da
 	output logic [31:0] pc,      //PC atual
 	output logic [31:0] npc      //Novo PC
 
 );
-	logic read_inst;             //Bit sinalizando a leitura de uma instrução 
+	logic read_inst;             //Bit sinalizando a leitura de uma instruï¿½ï¿½o 
 	logic read_cache;            //Bit sinalizando a leitura na cache
-	//logic [31:0] addr_cache;     //Endereço de busca na cache 
-//	logic [31:0] instr_cache;    //Instrução de busca na cache
+	//logic [31:0] addr_cache;     //Endereï¿½o de busca na cache 
+//	logic [31:0] instr_cache;    //Instruï¿½ï¿½o de busca na cache
 
-//Importando o módulo i_cache 
+//Importando o mï¿½dulo i_cache 
 i_cache  instr_mem(
-	.address(pc[12:2]),  //Associando o endereço address da cache de 32 Bits à variável addr_cache
-	.clock(clk),           //Associando o clock do i_cache à variável clk 
-	.rden(read_inst),     //Associando o read enable da i_cache à variável read_cache 
-	.q(instruction)        //Associando a variável q da i_cache de 32 Bits à variável instr_cache
+	.address(pc[12:2]),  //Associando o endereï¿½o address da cache de 32 Bits ï¿½ variï¿½vel addr_cache
+	.clock(clk),           //Associando o clock do i_cache ï¿½ variï¿½vel clk 
+	.rden(read_inst),     //Associando o read enable da i_cache ï¿½ variï¿½vel read_cache 
+	.q(instruction)        //Associando a variï¿½vel q da i_cache de 32 Bits ï¿½ variï¿½vel instr_cache
 );
 typedef enum bit [1:0] { reset, init, ready } state_fetch;
 state_fetch state;
@@ -71,7 +72,11 @@ always_ff @(posedge clk) begin
 			end
 			ready	: begin
 				read_inst <= 1'b1;
-				pc <= load_next_pc ? next_pc : pc + 4; 
+				if(bubble_from_decoder) begin
+					pc <= pc;
+				end else begin
+					pc <= load_next_pc ? next_pc : pc + 4;
+				end
 				npc <= pc;
 			end
 		//default: state <=	reset;

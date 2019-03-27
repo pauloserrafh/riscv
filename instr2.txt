@@ -1,0 +1,19 @@
+ADDI   x10,x0,100 ; carrega 100 no endereco base
+ADDI  x2,x0,2 
+SLL   x2,x2,x2 
+ADDI  x2,x2,2 ; x2 deve ter 10
+AND   x1,x2,x0 ; x1 deve ter 0
+SLLI  x3,x1,2 ; multiplica por 4
+ADD   x3,x3,x10 ; calcula endereco
+ADD   x4,x1,x1
+SW    x4,0(x3) ; guarda o dobro de x1
+ADDI  x1,x1,1
+BNE   x1,x2,-20
+ADDI  x0,x0,0
+ADDI  x0,x0,0
+ADDI  x0,x0,0
+JAL   x20,0 ; fica preso aqui
+ADDI  x0,x0,0
+ADDI  x0,x0,0
+ADDI  x0,x0,0
+

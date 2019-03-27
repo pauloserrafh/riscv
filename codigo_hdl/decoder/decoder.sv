@@ -18,6 +18,7 @@ module decoder(
 	output logic write_mem_from_decoder,
 	output logic branch_from_decoder,
 	output logic u_branch_from_decoder,
+	output logic bubble_from_decoder,
 
 	output logic a_select_from_decoder,
 	output logic b_select_from_decoder,
@@ -51,6 +52,7 @@ module decoder(
 	logic write_mem;
 	logic branch;
 	logic u_branch;
+	logic bubble;
 
 	logic a_select;
 	logic b_select;
@@ -72,7 +74,11 @@ module decoder(
 			instr_from_icache_reg <= 32'd0;
 		end
 		else begin
-			instr_from_icache_reg <= instr_from_icache;
+			if (bubble_from_decoder) begin
+				instr_from_icache_reg <= 32'd0;
+			end else begin
+				instr_from_icache_reg <= instr_from_icache;
+			end
 		end
 	
 	end
@@ -109,6 +115,7 @@ module decoder(
 		.write_mem(write_mem),
 		.branch(branch),
 		.u_branch(u_branch),
+		.bubble(bubble),
 
 		.a_select(a_select),
 		.b_select(b_select),
@@ -137,6 +144,7 @@ module decoder(
 			write_mem_from_decoder <= 0;
 			branch_from_decoder <= 0;
 			u_branch_from_decoder <= 0;
+			bubble_from_decoder <= 0;
 
 			a_select_from_decoder <= 0;
 			b_select_from_decoder <= 0;
@@ -165,6 +173,7 @@ module decoder(
 			write_mem_from_decoder <= write_mem;
 			branch_from_decoder <= branch;
 			u_branch_from_decoder <= u_branch;
+			bubble_from_decoder <= bubble;
 
 			a_select_from_decoder <= a_select;
 			b_select_from_decoder <= b_select;

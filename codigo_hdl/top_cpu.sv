@@ -21,6 +21,7 @@ logic [31:0] pc_top_cpu			;
 logic [31:0] npc_top_cpu			;
 
 logic next_pc_top			;
+logic bubble_from_decoder_top_cpu;
 //-------------DECODER--------------------//
 //                                      ;
 logic  	write_reg_from_write_back_top_cpu	;
@@ -97,6 +98,7 @@ fetch fetch_riscv(
 	//memory
 	.next_pc		(  next_pc_top_cpu		)	,
 	.load_next_pc	(  load_next_pc_top_cpu	)	,
+	.bubble_from_decoder	(bubble_from_decoder_top_cpu),
 	//
 	.instruction	(instr_top_cpu	) 			,
 	.pc				(pc_top_cpu		) 		,
@@ -136,7 +138,8 @@ decoder decoder_riscv(
 	.read_mem_from_decoder			(read_mem_from_decoder_top_cpu			)	,
 	.write_mem_from_decoder			(write_mem_from_decoder_top_cpu			)	,
 	.branch_from_decoder			( branch_from_decoder_top_cpu			)	,
-	.u_branch_from_decoder			(u_branch_from_decoder_top_cpu			)
+	.u_branch_from_decoder			(u_branch_from_decoder_top_cpu			)	,
+	.bubble_from_decoder		(bubble_from_decoder_top_cpu				)
 
 );
 
