@@ -5,6 +5,7 @@ codigo_hdl/decoder/decoder.sv
 codigo_hdl/decoder/imm_generator.sv
 codigo_hdl/decoder/register_bank.sv
 codigo_hdl/decoder/control_unit.sv
+codigo_hdl/decoder/branch_detector.sv
 codigo_hdl/execution/simple_mux.sv
 codigo_hdl/execution/execution.sv
 codigo_hdl/execution/basic_comparator32.sv
@@ -18,8 +19,10 @@ codigo_hdl/memory/memory.sv
 codigo_hdl/memory/store_unit.sv
 codigo_hdl/memory/branch_unit.sv
 codigo_hdl/memory/d_cache.v
+codigo_hdl/memory/d_cache_up.v
 codigo_hdl/write_back/load_unit.sv
 codigo_hdl/write_back/write_back.sv
+codigo_hdl/write_back/handler_stop_requests.sv
 codigo_hdl/inst_mem_ctrl.sv
 codigo_hdl/interrupt_controller.sv
 codigo_hdl/top_architecture.sv

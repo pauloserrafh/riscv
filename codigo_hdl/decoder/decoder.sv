@@ -10,6 +10,9 @@ module decoder(
 	input logic [31:0] write_data_from_write_back,
 	input logic [4:0] rd_from_write_back,
 	
+	//requisição para parar o pipeline
+	output logic request_stop_pipeline_from_decoder,
+	
 	//output bits de controle reg pipeline	
 	output logic write_reg_from_decoder,
 	output logic write_reg_select_from_decoder,
@@ -18,7 +21,6 @@ module decoder(
 	output logic write_mem_from_decoder,
 	output logic branch_from_decoder,
 	output logic u_branch_from_decoder,
-	output logic bubble_from_decoder,
 
 	output logic a_select_from_decoder,
 	output logic b_select_from_decoder,
@@ -40,6 +42,9 @@ module decoder(
 );	
 
 	// fios
+	logic stall_from_branchDetector;
+	
+	logic [6:0] instr_from_icache_opcode;
 	logic [2:0] instr_from_icache_funct3;
 	logic [4:0] instr_from_icache_rd;
 	logic [4:0] instr_from_icache_rs1;
@@ -52,7 +57,6 @@ module decoder(
 	logic write_mem;
 	logic branch;
 	logic u_branch;
-	logic bubble;
 
 	logic a_select;
 	logic b_select;
@@ -67,27 +71,21 @@ module decoder(
 	logic [31:0] rs1_data;
 	logic [31:0] rs2_data;
 	
-	logic [31:0] instr_from_icache_reg;
+	assign instr_from_icache_opcode = instr_from_icache[6:0];
+	assign instr_from_icache_funct3 = instr_from_icache[14:12];
+	assign instr_from_icache_rd 	= instr_from_icache[11:7];
+	assign instr_from_icache_rs1 	= instr_from_icache[19:15];
+	assign instr_from_icache_rs2 	= instr_from_icache[24:20];
 	
-	always_ff@(posedge clk)begin
-		if (rst_h)begin
-			instr_from_icache_reg <= 32'd0;
-		end
-		else begin
-			if (bubble_from_decoder) begin
-				instr_from_icache_reg <= 32'd0;
-			end else begin
-				instr_from_icache_reg <= instr_from_icache;
-			end
-		end
+	branch_detector branchDetector(
+		.clk(clk),
+		.rst_h(rst_h), 
+		.stop(1'b0),
+		.opcode(instr_from_icache_opcode),
+		.request_stop_pipeline(request_stop_pipeline_from_decoder),
+		.stall(stall_from_branchDetector)	
+	);
 	
-	end
-	
-	assign instr_from_icache_funct3 = instr_from_icache_reg[14:12];
-	assign instr_from_icache_rd 	= instr_from_icache_reg[11:7];
-	assign instr_from_icache_rs1 	= instr_from_icache_reg[19:15];
-	assign instr_from_icache_rs2 	= instr_from_icache_reg[24:20];
-
 	register_bank registerBank(
 		//input
 		.clk(clk),
@@ -105,7 +103,7 @@ module decoder(
 	
 	control_unit controlUnit(
 		//input
-		.instr(instr_from_icache_reg), //instr_from_icache
+		.instr(instr_from_icache), //instr_from_icache
 
 		//output
 		.write_reg(write_reg),
@@ -115,7 +113,6 @@ module decoder(
 		.write_mem(write_mem),
 		.branch(branch),
 		.u_branch(u_branch),
-		.bubble(bubble),
 
 		.a_select(a_select),
 		.b_select(b_select),
@@ -128,15 +125,15 @@ module decoder(
 	
 	imm_generator immGenerator(
 		//input
-		.instruction(instr_from_icache_reg),	 //instr_from_icache
+		.instruction(instr_from_icache),	 //instr_from_icache
 
 		//output
 		.immediate(immediate)
 	);
 
-	always_ff@(posedge clk or posedge rst_h) begin
-		if(rst_h) begin
-			//output bits de controle reg pipeline	
+	always_ff@(posedge clk) begin //posedge
+		if (rst_h || stall_from_branchDetector) begin
+//			//output bits de controle reg pipeline	
 			write_reg_from_decoder <= 0;
 			write_reg_select_from_decoder <= 0;
 
@@ -144,7 +141,6 @@ module decoder(
 			write_mem_from_decoder <= 0;
 			branch_from_decoder <= 0;
 			u_branch_from_decoder <= 0;
-			bubble_from_decoder <= 0;
 
 			a_select_from_decoder <= 0;
 			b_select_from_decoder <= 0;
@@ -173,7 +169,6 @@ module decoder(
 			write_mem_from_decoder <= write_mem;
 			branch_from_decoder <= branch;
 			u_branch_from_decoder <= u_branch;
-			bubble_from_decoder <= bubble;
 
 			a_select_from_decoder <= a_select;
 			b_select_from_decoder <= b_select;

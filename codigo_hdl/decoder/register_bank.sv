@@ -15,7 +15,7 @@ module register_bank(
 	always_ff@(negedge clk or posedge rst_h) begin
 		if(rst_h) begin
 			for(int i = 0; i<32 ; i++) begin
-				registers[i][31:0] <= 32'b0 + i;
+				registers[i][31:0] <= 32'b0;
 				
 			end
 		end

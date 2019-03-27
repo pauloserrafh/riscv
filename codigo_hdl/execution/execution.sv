@@ -89,13 +89,13 @@ basic_comparator32	BC(sig_1,
 							
 mux_fowarding_unit	MF1(rs1_data_from_decoder,
 								result_from_execution,
-								result_from_memory,
+								result_from_wb,
 								FowardingA,
 								sig_1);
 
 mux_fowarding_unit	MF2(rs2_data_from_decoder,
 								result_from_execution,
-								result_from_memory,
+								result_from_wb,
 								FowardingB,
 								sig_2);
 

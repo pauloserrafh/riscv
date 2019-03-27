@@ -4,4 +4,14 @@ cycloneiv_ver/
 lpm_ver/
 sgate_ver/
 work/
+db/
+incremental_db/
+output_files/
+sint.qpf
+sint.qsf
+sint.qws
 vsim.wlf
+*.bak
+*.ver
+codigo_hdl/sint.ipinfo
+verilog-library-setup.tcl

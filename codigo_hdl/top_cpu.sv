@@ -12,19 +12,23 @@ module top_cpu (
 	output logic [31:0] instruction_out
 );
 //--------------INTERNAL-SIGNALS------------------//
+
+
 //-------------FETCH--------------------//
-logic [31:0] next_pc_top_cpu;
-logic load_next_pc_top_cpu;
+logic stop_fetch_top_cpu;
+logic [31:0] next_pc_top_cpu    ;
+logic load_next_pc_top_cpu      ;
 
-logic [31:0] instr_top_cpu			;
+logic [31:0] instr_top_cpu      ;
 logic [31:0] pc_top_cpu			;
-logic [31:0] npc_top_cpu			;
+logic [31:0] npc_top_cpu		;
 
-logic next_pc_top			;
-logic bubble_from_decoder_top_cpu;
+logic next_pc_top			    ;
+
 //-------------DECODER--------------------//
-//                                      ;
-logic  	write_reg_from_write_back_top_cpu	;
+logic           request_stop_pipeline_from_decoder_top_cpu    ;
+
+logic       	write_reg_from_write_back_top_cpu	;
 logic [31:0]	write_data_from_write_back_top_cpu	;
 //
 logic [4:0] 	rd_from_write_back_top_cpu			;
@@ -54,8 +58,8 @@ logic [4:0] 	rs2_from_decoder_top_cpu			;
 logic [4:0] 	rd_from_decoder_top_cpu				;
 logic [2:0]		funct3_from_decoder_top_cpu			;
 //
-logic 		write_reg_from_memory_top_cpu		       	;
-logic 		write_reg_from_wb_top_cpu			       	;
+logic 		write_reg_from_memory_top_cpu		    ;
+logic 		write_reg_from_wb_top_cpu			   	;
 logic [4:0] rd_from_memory_top_cpu				;
 logic [4:0] rd_from_wb_top_cpu					;
 logic [31:0]result_from_memory_top_cpu			;
@@ -91,14 +95,20 @@ logic [31:0] out_from_memory_top_cpu;
 
 logic [31:0] data_write_from_wb_top_cpu;
 
+
 //--------------INSTANCES-HDL------------------//
+handler_stop_requests handler_stop_requests_riscv(
+	.request_stop_pipeline_from_decoder(request_stop_pipeline_from_decoder_top_cpu),
+	.stop_fetch(stop_fetch_top_cpu)
+);
+
 fetch fetch_riscv(
 	.clk			(  clk_top_cpu	)	,
 	.rst			(  rst_top_cpu	)	,
+	.stop           (stop_fetch_top_cpu),
 	//memory
 	.next_pc		(  next_pc_top_cpu		)	,
 	.load_next_pc	(  load_next_pc_top_cpu	)	,
-	.bubble_from_decoder	(bubble_from_decoder_top_cpu),
 	//
 	.instruction	(instr_top_cpu	) 			,
 	.pc				(pc_top_cpu		) 		,
@@ -108,8 +118,9 @@ fetch fetch_riscv(
 decoder decoder_riscv(
 	.clk							(clk_top_cpu	)	,
 	.rst_h							(rst_top_cpu	)	,
+	.request_stop_pipeline_from_decoder (request_stop_pipeline_from_decoder_top_cpu),
 	//FETCH
-	.pc_from_fetch					( pc_top_cpu		),
+	.pc_from_fetch					( npc_top_cpu	),
 	.instr_from_icache				( instr_top_cpu	),
 	
 	.write_reg_from_decoder			(write_reg_from_decoder_top_cpu			)	,
@@ -138,12 +149,11 @@ decoder decoder_riscv(
 	.read_mem_from_decoder			(read_mem_from_decoder_top_cpu			)	,
 	.write_mem_from_decoder			(write_mem_from_decoder_top_cpu			)	,
 	.branch_from_decoder			( branch_from_decoder_top_cpu			)	,
-	.u_branch_from_decoder			(u_branch_from_decoder_top_cpu			)	,
-	.bubble_from_decoder		(bubble_from_decoder_top_cpu				)
+	.u_branch_from_decoder			(u_branch_from_decoder_top_cpu			)
 
 );
 
- execution execution_riscv(
+execution execution_riscv(
 	.clk						(clk_top_cpu	),
 	.rst						(rst_top_cpu	),
 	//FROM DECODER
@@ -174,7 +184,7 @@ decoder decoder_riscv(
 	.rd_from_memory					(rd_from_memory_top_cpu					)	,
 	.rd_from_wb						(rd_from_wb_top_cpu						)	,
 	.result_from_memory				(result_from_memory_top_cpu				)	,
-	.result_from_wb					(result_from_wb_top_cpu					)	,
+	.result_from_wb					(data_write_from_wb_top_cpu				)	,
 	.branch_addr_from_execution		(branch_addr_from_execution_top_cpu 	)	,
 	.result_from_execution			(result_from_execution_top_cpu			)	,
 	.rs2_data_from_execution		(rs2_data_from_execution_top_cpu	   	)	,
@@ -233,7 +243,6 @@ write_back write_back_riscv (
 	//----------------------------//
 	.data_write_from_wb(data_write_from_wb_top_cpu),
 	.rd_from_wb(rd_from_wb_top_cpu),
-	.result_from_wb(result_from_wb_top_cpu),
 	.write_reg_from_wb(write_reg_from_wb_top_cpu)
 );
 
