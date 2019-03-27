@@ -1,7 +1,7 @@
 #DO NOT USE WITH MODELSIM-ALTERA VERSION                                                                
 #This file contains the commands to create libraries and compile the library file into those libraries. 
                                                                                                         
-set path_to_quartus C:/intelFPGA/17.1/quartus
+set path_to_quartus <path/to/your/quartus/dir>
 
 set type_of_sim compile_all
                                                                                                         
